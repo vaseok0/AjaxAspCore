@@ -1,0 +1,114 @@
+﻿@model IQueryable<QuestionData>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/styleQuest.css" />
+</head>
+
+<div>
+    <input class="testbtn" type="button" value="23dsadasfa" />
+    <div class="test">
+        @foreach (var item in Model)
+        {
+            <div class="enumerator">1/@ViewBag.Count</div>
+            <div class="quest">@item.Question</div>
+            <div class="answerBtn">
+                <button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(@item.Id)">@item.Answer</button>
+                <button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(@item.Id)">@item.Wromgone</button>
+                <button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(@item.Id)">@item.Wrongthree</button>
+                <button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(@item.Id)">@item.Wrongtwoo</button>
+
+                <input disabled type="submit" id="submit" value="2345" class="btn btn-sm btn-info" onclick="getOrderDisplay(@item.Id)" />
+
+            </div>
+        }
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+
+        let countAnswer = 0;
+
+        //$('.test').on("click", "#one", function () {
+
+        //    $('#submit').prop('disabled', false);
+        //    //$('button').prop('disabled', true);
+
+        //});
+
+        function checkAnswer(questId) {
+            let check = $(document.activeElement);
+            let content = $(document.activeElement).text();
+            $('#submit').prop('disabled', false);
+            $('button').prop('disabled', true);
+            $.ajax({
+                    url: '@Url.Action("GetCheckAnswer")',
+                type: "POST",
+                data: { Answer: content, QuestId: questId },
+                    dataType: "json",
+                success: function (owner) {
+                    if (owner != '') {
+                        check.text('Правильний ответ: ' + owner);
+                        check.css('background-color', 'red');
+                    }
+                    else {
+                        check.css('background-color', 'green');
+                        countAnswer++;
+                    }
+                    },
+                    failure: function (response) {
+                        alert(response);
+                    }
+            });
+        }
+
+
+        function getOrderDisplay(questId) {
+    $.ajax(
+        {
+            url: '@Url.Action("GetOrderDisplay")',
+            type: "POST",
+            data: { QuestId: questId  },
+            dataType: "json",
+            success: function (response) {
+                $('.answerBtn').children().remove();
+
+                if (response == "") {
+                    alert('Правильних ответов: ' + countAnswer);
+                    window.location.href = '@Url.Action("Index")';
+                }
+
+                response.forEach(function (owner) {
+                    let contant = freshBlock(owner);
+
+                    $('.enumerator').text(owner.id + '/@ViewBag.Count');
+                    $('.quest').text(owner.question);
+                    $('.answerBtn').append(contant[0], contant[1], contant[2], contant[3] +
+                        '<input disabled="" type="submit" id="submit" value="2345" class="btn btn-sm btn-info" onclick="getOrderDisplay(' + owner.id + ')" />');
+                });
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+
+            function freshBlock(owner) {
+                let answer     = '<button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(' + owner.id + ')">' + owner.answer + '</button>';
+                let wrongOne   = '<button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(' + owner.id + ')">' + owner.wromgone + '</button>';
+                let wrongTwoo  = '<button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(' + owner.id + ')">' + owner.wrongtwoo + '</button>';
+                let wrongThree = '<button id="answer" type="submit" class="btn btn-primary btn-lg btn-block" onclick="checkAnswer(' + owner.id + ')">' + owner.wrongthree + '</button>';
+
+
+                var array = [answer, wrongOne, wrongTwoo, wrongThree];
+                array.sort(function (a, b) {
+                    return 0.5 - Math.random();
+                })
+                return array;
+        }
+}
+
+    </script>
+
+}

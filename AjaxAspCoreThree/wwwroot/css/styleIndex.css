@@ -1,0 +1,24 @@
+﻿.quest__block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.testCard {
+    box-shadow: 0 0 100px #000000;
+    margin: 10px 20px;
+    background-color: rgb(87, 154, 216);
+}
+
+.testCard:hover {
+    box-shadow: 0 0 100px #f00505;
+}
+
+.quest__link {
+    text-decoration: none;
+    color: #000000;
+}
+
+.quest__link:hover {
+    text-decoration: none;
+}
